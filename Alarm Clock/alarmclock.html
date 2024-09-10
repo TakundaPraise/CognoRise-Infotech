@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Clock App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .time-display {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .date-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .alarms-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .alarm-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .toggle {
+            cursor: pointer;
+            color: #007bff;
+        }
+        .snooze-dismiss {
+            display: none;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alarm Clock</h1>
+        <div class="time-display" id="currentTime">00:00</div>
+        <div class="date-display" id="currentDate">YYYY-MM-DD</div>
+        <button class="button" onclick="showAlarmSetting()">Set New Alarm</button>
+        
+        <div id="alarmSetting" style="display: none;">
+            <input type="time" id="alarmTime" required>
+            <select id="alarmTone">
+                <option value="tone1.mp3">Tone 1</option>
+                <option value="tone2.mp3">Tone 2</option>
+                <option value="tone3.mp3">Tone 3</option>
+            </select>
+            <button class="button" onclick="saveAlarm()">Save Alarm</button>
+        </div>
+
+        <ul class="alarms-list" id="alarmsList"></ul>
+        
+        <div class="snooze-dismiss" id="snoozeDismissOptions">
+            <button class="button" onclick="snoozeAlarm()">Snooze</button>
+            <button class="button" onclick="dismissAlarm()">Dismiss</button>
+        </div>
+    </div>
+
+    <script>
+        const alarms = [];
+        let alarmTimeout;
+
+        function showAlarmSetting() {
+            document.getElementById('alarmSetting').style.display = 'block';
+        }
+
+        function saveAlarm() {
+            const time = document.getElementById('alarmTime').value;
+            const tone = document.getElementById('alarmTone').value;
+
+            if (time) {
+                const alarmTime = new Date();
+                const [hours, minutes] = time.split(':');
+                alarmTime.setHours(hours);
+                alarmTime.setMinutes(minutes);
+                alarmTime.setSeconds(0);
+                alarms.push({ time: alarmTime, tone, active: true });
+                updateAlarmsList();
+                setAlarm(alarms[alarms.length - 1]); // Set the alarm immediately after saving
+                document.getElementById('alarmSetting').style.display = 'none';
+            }
+        }
+
+        function updateAlarmsList() {
+            const alarmList = document.getElementById('alarmsList');
+            alarmList.innerHTML = '';
+            alarms.forEach((alarm, index) => {
+                const li = document.createElement('li');
+                li.className = 'alarm-item';
+                li.innerHTML = `${alarm.time.toLocaleTimeString()} 
+                <span class="toggle" onclick="toggleAlarm(${index})">
+                ${alarm.active ? 'ON' : 'OFF'}
+                </span>`;
+                alarmList.appendChild(li);
+            });
+        }
+
+        function toggleAlarm(index) {
+            alarms[index].active = !alarms[index].active;
+            updateAlarmsList();
+            if (alarms[index].active) {
+                setAlarm(alarms[index]);
+            } else {
+                clearTimeout(alarmTimeout);
+            }
+        }
+
+        function setAlarm(alarm) {
+            const now = new Date();
+            const timeToAlarm = alarm.time - now;
+            if (timeToAlarm > 0) {
+                alarmTimeout = setTimeout(() => {
+                    ringAlarm(alarm.tone);
+                }, timeToAlarm);
+            }
+        }
+
+        function ringAlarm(tone) {
+            alert(`Alarm ringing! Tone: ${tone}`);
+            document.getElementById('snoozeDismissOptions').style.display = 'flex';
+        }
+
+        function snoozeAlarm() {
+            clearTimeout(alarmTimeout);
+            document.getElementById('snoozeDismissOptions').style.display = 'none';
+            // Set snooze duration (e.g., 5 minutes)
+            const snoozeTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+            const newAlarmTime = new Date(Date.now() + snoozeTime);
+            alarms.push({ time: newAlarmTime, tone: 'tone1.mp3', active: true }); // Default tone for snooze
+            updateAlarmsList();
+            setAlarm(alarms[alarms.length - 1]); // Set the snooze alarm
+        }
+
+        function dismissAlarm() {
+            clearTimeout(alarmTimeout);
+            document.getElementById('snoozeDismissOptions').style.display = 'none';
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').innerText = now.toLocaleTimeString();
+            document.getElementById('currentDate').innerText = now.toLocaleDateString();
+        }
+
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
