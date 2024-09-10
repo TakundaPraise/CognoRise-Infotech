@@ -1,0 +1,11 @@
+#TO-DO LIST
+
+● Interface Design:
+○ Design a basic user interface (UI) with a text input field for adding tasks and a
+list view to display them.
+● Task Addition:
+○ Implement functionality to add tasks entered by the user to the list view.
+● Task Removal:
+○ Allow users to remove tasks from the list by tapping on them.
+● Basic Functionality:
+○ Ensure the app can handle adding and removing tasks without crashing.
