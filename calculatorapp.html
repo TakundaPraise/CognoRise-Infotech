@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <h1>Calculator</h1>
+
+  <style>
+    h1 {
+      text-align: center;
+    }
+    .calculator {
+      width: 300px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f1f1f1;
+    }
+
+    .calculator input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .calculator button {
+      width: 60px;
+      height: 40px;
+      font-size: 16px;
+      margin: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .calculator button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" readonly>
+	
+    <div>
+      <button onclick="clearInput()">AC</button>
+      <button onclick="appendToDisplay('/')">/</button>
+      <button onclick="appendToDisplay('*')">*</button>
+      <button onclick="appendToDisplay('-')">-</button>
+    </div>
+    <div>
+      <button onclick="appendToDisplay('7')">7</button>
+      <button onclick="appendToDisplay('8')">8</button>
+      <button onclick="appendToDisplay('9')">9</button>
+      <button onclick="appendToDisplay('+')">+</button>
+    </div>
+    <div>
+      <button onclick="appendToDisplay('4')">4</button>
+      <button onclick="appendToDisplay('5')">5</button>
+      <button onclick="appendToDisplay('6')">6</button>
+      <button onclick="calculateResult()">=</button>
+    </div>
+    <div>
+      <button onclick="appendToDisplay('1')">1</button>
+      <button onclick="appendToDisplay('2')">2</button>
+      <button onclick="appendToDisplay('3')">3</button>
+      <button onclick="appendToDisplay('.')">.</button>
+    </div>
+    <div>
+      <button onclick="appendToDisplay('0')">0</button>
+	  <button onclick="deleteLastDigit()">C</button>
+    </div>
+  </div>
+
+  <script>
+    let displayValue = '';
+
+    function appendToDisplay(value) {
+      displayValue += value;
+      document.getElementById('display').value = displayValue;
+    }
+
+    function clearInput() {
+      displayValue = '';
+      document.getElementById('display').value = '';
+    }
+	
+	function deleteLastDigit() {
+      displayValue = displayValue.slice(0, -1);
+      document.getElementById('display').value = displayValue;
+    }
+
+    function calculateResult() {
+      try {
+        const result = eval(displayValue);
+        displayValue = result.toString();
+        document.getElementById('display').value = displayValue;
+      } catch (error) {
+        alert('Invalid expression');
+        clearInput();
+      }
+    }
+  </script>
+</body>
+</html>
